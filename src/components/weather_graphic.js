@@ -2,7 +2,6 @@ import React from "react";
 import "./component_styles.css";
 
 export default function weather_graphic(props) {
-  console.log(props.data);
   return (props.data.length != 0 ) ? (
     <div className="weather_graphic">
       <img

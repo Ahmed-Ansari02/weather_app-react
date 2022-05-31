@@ -5,8 +5,12 @@ import Flag_box from "./components/Flag_box";
 import MapChange from "./components/Markerlocation";
 import Weather_graphic from "./components/weather_graphic";
 import Description_country from "./components/Description_country";
+import Brief_description from "./components/brief_description";
+import Img_strip from "./components/img_strip";
 import { useState } from "react";
 import { MapContainer, TileLayer } from "react-leaflet";
+
+const query = "Nature";
 
 const API_key = "b07ad7e0917b77d6b0be848334760d20";
 
@@ -19,11 +23,17 @@ function App(props) {
   const [LocalTime, setLocalTime] = useState(null);
   const [Time_zone, setTime_zone] = useState(null);
   const [Weather_graphics, setWeather_graphics] = useState([]);
+  const [Wiki, setWiki] = useState();
+  const [Img, setImg] = useState();
 
   async function getCity() {
     let response = await fetch(
       `http://api.openweathermap.org/geo/1.0/direct?q=${City}&limit=5&appid=${API_key}`
     );
+    let wiki_text = await get_city_wiki(City);
+
+    setWiki(wiki_text);
+    setImg(await get_city_img(City));
     let json = await response.json();
     let weather_data = await getWeatherData([json[0].lat, json[0].lon]);
     setWeatherdata([
@@ -40,7 +50,6 @@ function App(props) {
       weather_data.weather[0].icon,
       weather_data.weather[0].main,
     ]);
-    console.log(weather_data);
 
     setCoordinates([json[0].lat, json[0].lon]);
     setCountry(json[0].country);
@@ -69,11 +78,36 @@ function App(props) {
   function handleTextChange(e) {
     setCity(e.target.value);
   }
+  async function get_city_wiki(city_name) {
+    let res = await fetch(
+      `https://en.wikipedia.org/w/api.php?action=query&format=json&origin=*&prop=extracts&titles=${city_name}&formatversion=2&exsentences=10&exlimit=1&explaintext=1`
+    );
+
+    let data = await res.json();
+    return data.query.pages[0].extract;
+  }
+  async function get_city_img(city_name) {
+    let res = await fetch(
+      `https://api.pexels.com/v1/search?query=${city_name}&per_page=6`,
+      {
+        method: "GET",
+        headers: new Headers({
+          Authorization:
+            "563492ad6f9170000100000111fcb05b4be348b98a55b33dfb31dd82 ",
+        }),
+      }
+    );
+    let data = await res.json();
+    console.log(data.photos)
+    return data.photos;
+
+  }
 
   return (
     <div className="App">
       <header className="App-header">
-        <p> Hello! {props.name}</p>
+    
+        <p> Weather App </p>
       </header>
 
       <Search_box handleTextChange={handleTextChange} func={getCity} />
@@ -85,7 +119,9 @@ function App(props) {
         local_time={LocalTime}
         time_zone={Time_zone}
       />
-      <Weather_graphic data={Weather_graphics}/>
+      <Weather_graphic data={Weather_graphics} />
+      <Brief_description wiki={Wiki} />
+      <Img_strip img={Img} />
       <div className="map">
         <MapContainer center={[0, 0]} zoom={1} scrollWheelZoom={true}>
           <TileLayer
