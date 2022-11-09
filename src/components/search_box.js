@@ -1,5 +1,4 @@
 import React from "react";
-import { useState } from "react";
 import Search_logo from "../search.jpeg";
 
 export default function search_box(props) {
