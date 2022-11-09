@@ -14,7 +14,7 @@ export default function search_box(props) {
         <input
           type="text"
           className="TextInput"
-          placeholder="Enter Country"
+          placeholder="Enter name of the city"
           onChange={props.handleTextChange}
         />
         <input

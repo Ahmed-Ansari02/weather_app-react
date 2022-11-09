@@ -9,10 +9,8 @@ import Brief_description from "./components/brief_description";
 import Img_strip from "./components/img_strip";
 import { useState } from "react";
 import { MapContainer, TileLayer } from "react-leaflet";
-
-const query = "Nature";
-
-const API_key = "b07ad7e0917b77d6b0be848334760d20";
+const API_key = process.env.REACT_APP_API_key;
+const Authorization = process.env.REACT_APP_Authorization;
 
 function App(props) {
   const [Coordinates, setCoordinates] = useState(null);
@@ -92,21 +90,18 @@ function App(props) {
       {
         method: "GET",
         headers: new Headers({
-          Authorization:
-            "563492ad6f9170000100000111fcb05b4be348b98a55b33dfb31dd82 ",
+          Authorization: Authorization,
         }),
       }
     );
     let data = await res.json();
-    console.log(data.photos)
+    console.log(data.photos);
     return data.photos;
-
   }
 
   return (
     <div className="App">
       <header className="App-header">
-    
         <p> Weather App </p>
       </header>
 
